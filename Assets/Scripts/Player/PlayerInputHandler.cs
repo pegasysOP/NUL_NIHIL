@@ -6,6 +6,7 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool JumpHeld { get; private set; }
+    public bool IsInputEnabled => controls != null && controls.Gameplay.enabled;
 
     private PlayerControls controls;
 
@@ -39,6 +40,22 @@ public class PlayerInputHandler : MonoBehaviour
     private void LateUpdate()
     {
         JumpPressed = false;
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        if (controls == null) return;
+        if (enabled)
+        {
+            controls.Gameplay.Enable();
+        }
+        else
+        {
+            controls.Gameplay.Disable();
+            MoveInput = Vector2.zero;
+            JumpPressed = false;
+            JumpHeld = false;
+        }
     }
 
     private void OnMove(InputAction.CallbackContext context)
