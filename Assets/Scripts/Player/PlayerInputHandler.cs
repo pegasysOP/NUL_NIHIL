@@ -37,6 +37,11 @@ public class PlayerInputHandler : MonoBehaviour
         controls.Gameplay.Jump.canceled -= OnJumpCanceled;
     }
 
+    private void OnDestroy()
+    {
+        controls?.Dispose();
+    }
+
     private void LateUpdate()
     {
         JumpPressed = false;
