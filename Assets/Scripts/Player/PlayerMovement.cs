@@ -41,6 +41,11 @@ public class PlayerMovement : MonoBehaviour
     private bool wasGrounded = false;
     private Vector2 groundNormal = Vector2.up;
     private float groundProbe;
+    private bool frozen;
+
+    // body centre in world space (the pivot sits at the feet)
+    public Vector2 Center =>
+        box != null ? (Vector2)transform.position + box.offset : (Vector2)transform.position;
 
     // how far the ground can fall away in one max-speed step on the steepest walkable slope
     private float SnapDistance => maxSpeed * Time.fixedDeltaTime * Mathf.Tan(maxSlopeAngle * Mathf.Deg2Rad) + skinWidth * 2f;
@@ -51,8 +56,27 @@ public class PlayerMovement : MonoBehaviour
         box = GetComponent<BoxCollider2D>();
     }
 
+    // room transitions freeze movement mid-frame but internal velocity survives so
+    // motion resumes exactly where it left off
+    public void SetFrozen(bool value)
+    {
+        if (frozen == value)
+            return;
+
+        frozen = value;
+
+        if (input != null)
+            input.SetInputEnabled(!value);
+
+        rb.simulated = !value;
+        rb.linearVelocity = value ? Vector2.zero : velocity;
+    }
+
     private void Update()
     {
+        if (frozen)
+            return;
+
         // full speed or nothing
         Vector2 raw = input.MoveInput;
         moveInput.x = Mathf.Abs(raw.x) > stickDeadzone ? Mathf.Sign(raw.x) : 0f;
@@ -69,6 +93,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (frozen)
+            return;
+
         // adopt what the solver actually did last step, but only where it removed
         // speed (walls/ceilings) - slope contacts can add sideways speed we don't want
         Vector2 solved = rb.linearVelocity;

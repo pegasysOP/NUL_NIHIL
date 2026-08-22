@@ -6,7 +6,7 @@ public class RoomManager : MonoBehaviour
 {
     public static RoomManager Instance { get; private set; }
 
-    [SerializeField] private Transform player;
+    [SerializeField] private PlayerMovement player;
     [SerializeField] private CameraRig cameraRig;
     [SerializeField] private RoomTransitionController transitionController;
 
@@ -27,20 +27,23 @@ public class RoomManager : MonoBehaviour
 
         // catch rooms enabled before this manager (e.g., additive scene load
         // where the rooms' OnEnable already fired)
-        foreach (var r in FindObjectsByType<Room>())
+        foreach (Room r in FindObjectsByType<Room>())
         {
-            if (!rooms.Contains(r)) rooms.Add(r);
+            if (!rooms.Contains(r))
+                rooms.Add(r);
         }
     }
 
     private void OnDestroy()
     {
-        if (Instance == this) Instance = null;
+        if (Instance == this)
+            Instance = null;
     }
 
     public void Register(Room room)
     {
-        if (room != null && !rooms.Contains(room)) rooms.Add(room);
+        if (room != null && !rooms.Contains(room))
+            rooms.Add(room);
     }
 
     public void Unregister(Room room)
@@ -50,49 +53,61 @@ public class RoomManager : MonoBehaviour
 
     private void Start()
     {
+        // find the player if the reference is missing
+        if (player == null)
+            player = FindAnyObjectByType<PlayerMovement>();
+
         if (player == null)
         {
-            Debug.LogError("RoomManager: Player Transform not assigned.", this);
+            Debug.LogError("RoomManager: no PlayerMovement found in scene.", this);
             return;
         }
+
         if (cameraRig == null)
         {
             Debug.LogError("RoomManager: CameraRig not assigned.", this);
             return;
         }
 
-        cameraRig.SetFollow(player);
+        cameraRig.SetFollow(player.transform);
 
-        var initial = FindRoomAtPoint(player.position);
+        Room initial = FindRoomAtPoint(player.Center);
         if (initial == null)
         {
             Debug.LogWarning(
-                $"RoomManager: player spawned outside any Room (position {player.position}).", this);
+                $"RoomManager: player spawned outside any Room (position {player.Center}).", this);
             return;
         }
 
         CurrentRoom = initial;
-        cameraRig.SetBounds(initial.CameraBounds);
+        cameraRig.SetBounds(initial.Bounds);
         initial.NotifyPlayerEntered();
         RoomChanged?.Invoke(initial);
     }
 
     private void FixedUpdate()
     {
-        if (player == null || transitionController == null) return;
-        if (transitionController.IsTransitioning) return;
+        if (player == null || transitionController == null)
+            return;
 
-        var hit = FindRoomAtPoint(player.position);
-        if (hit == null || hit == CurrentRoom) return;
+        if (transitionController.IsTransitioning)
+            return;
 
-        var prev = CurrentRoom;
+        // body centre, not the feet pivot, so vertical seams trigger evenly
+        Room hit = FindRoomAtPoint(player.Center);
+        if (hit == null || hit == CurrentRoom)
+            return;
+
+        Room prev = CurrentRoom;
         RoomChanging?.Invoke(prev, hit);
         transitionController.BeginTransition(prev, hit, () => CommitRoom(prev, hit));
     }
 
     private void CommitRoom(Room prev, Room next)
     {
-        if (prev != null) prev.NotifyPlayerExited();
+        if (prev != null)
+            prev.NotifyPlayerExited();
+
         CurrentRoom = next;
         next.NotifyPlayerEntered();
         RoomChanged?.Invoke(next);
@@ -105,9 +120,11 @@ public class RoomManager : MonoBehaviour
         float bestArea = float.PositiveInfinity;
         for (int i = 0; i < rooms.Count; i++)
         {
-            var room = rooms[i];
-            if (room == null || !room.ContainsPoint(point)) continue;
-            var size = room.BoundsTrigger != null ? room.BoundsTrigger.bounds.size : Vector3.zero;
+            Room room = rooms[i];
+            if (room == null || !room.ContainsPoint(point))
+                continue;
+
+            Vector3 size = room.Bounds != null ? room.Bounds.bounds.size : Vector3.zero;
             float area = size.x * size.y;
             if (area < bestArea)
             {

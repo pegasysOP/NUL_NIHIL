@@ -5,7 +5,7 @@ public class CameraRig : MonoBehaviour
 {
     [SerializeField] private CinemachineCamera vcam;
     [SerializeField] private CinemachineBrain brain;
-    [SerializeField] private CinemachineConfiner2D confiner;
+    [SerializeField] private CameraBoxConfiner confiner;
     [SerializeField] private Camera outputCamera;
 
     public CinemachineCamera Vcam => vcam;
@@ -17,20 +17,23 @@ public class CameraRig : MonoBehaviour
     {
         get
         {
-            var cam = OutputCamera;
+            Camera cam = OutputCamera;
             return cam != null ? cam.transform.position : transform.position;
         }
     }
 
     public void SetFollow(Transform target)
     {
-        if (vcam != null) vcam.Follow = target;
+        if (vcam != null)
+            vcam.Follow = target;
     }
 
     public void SetBounds(Collider2D shape)
     {
-        if (confiner == null) return;
-        confiner.BoundingShape2D = shape;
-        confiner.InvalidateBoundingShapeCache();
+        if (confiner == null && vcam != null)
+            confiner = vcam.GetComponent<CameraBoxConfiner>();
+
+        if (confiner != null)
+            confiner.SetBounds(shape);
     }
 }
