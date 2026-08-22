@@ -1,5 +1,6 @@
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class CameraRig : MonoBehaviour
 {
@@ -20,6 +21,26 @@ public class CameraRig : MonoBehaviour
             Camera cam = OutputCamera;
             return cam != null ? cam.transform.position : transform.position;
         }
+    }
+
+    private void Awake()
+    {
+        if (vcam != null && Mathf.Abs(vcam.Lens.OrthographicSize - ViewportConfig.HalfHeight) > 0.001f)
+            Debug.LogWarning(
+                $"CameraRig: vcam lens ortho size {vcam.Lens.OrthographicSize} doesn't match " +
+                $"ViewportConfig.HalfHeight {ViewportConfig.HalfHeight}.", this);
+
+        Camera cam = OutputCamera;
+        PixelPerfectCamera ppc = cam != null ? cam.GetComponent<PixelPerfectCamera>() : null;
+
+        if (ppc != null &&
+            (ppc.refResolutionX != ViewportConfig.PixelsWide ||
+             ppc.refResolutionY != ViewportConfig.PixelsHigh ||
+             ppc.assetsPPU != (int)ViewportConfig.PixelsPerUnit))
+            Debug.LogWarning(
+                $"CameraRig: Pixel Perfect Camera is {ppc.refResolutionX}x{ppc.refResolutionY} at " +
+                $"{ppc.assetsPPU} PPU, ViewportConfig expects {ViewportConfig.PixelsWide}x" +
+                $"{ViewportConfig.PixelsHigh} at {ViewportConfig.PixelsPerUnit}.", this);
     }
 
     public void SetFollow(Transform target)

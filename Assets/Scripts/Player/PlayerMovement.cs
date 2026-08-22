@@ -23,6 +23,10 @@ public class PlayerMovement : MonoBehaviour
     public float jumpCutMult = 3f;
 
     [Header("Ground")]
+    // includes OneWay, but Player <-> OneWay solver collision is OFF in the matrix for now:
+    // physics ignores the matrix, so the ground casts still hit one-way tiles and the
+    // ground snap holds us on top - meaning one way platforms accidentally work (not
+    // including drop through)
     public LayerMask groundLayer;
     public float maxSlopeAngle = 45f;
     public float skinWidth = 0.02f;
@@ -54,6 +58,13 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
+
+        // wire the input handler if the reference is missing, same as rb/box
+        if (input == null)
+            input = GetComponent<PlayerInputHandler>();
+
+        if (input == null)
+            Debug.LogError("PlayerMovement: no PlayerInputHandler assigned or on this object.", this);
     }
 
     // room transitions freeze movement mid-frame but internal velocity survives so
@@ -65,8 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
         frozen = value;
 
-        if (input != null)
-            input.SetInputEnabled(!value);
+        input.SetInputEnabled(!value);
 
         rb.simulated = !value;
         rb.linearVelocity = value ? Vector2.zero : velocity;

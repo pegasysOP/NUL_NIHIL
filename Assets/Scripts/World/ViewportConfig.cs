@@ -1,8 +1,12 @@
+// single authority for the viewport size in code
 public static class ViewportConfig
 {
-    // 480x270 px viewport at 16 PPU
-    public const float HalfWidth = 15f;
-    public const float HalfHeight = 8.4375f;
-    public const float Width = HalfWidth * 2f;
-    public const float Height = HalfHeight * 2f;
+    public const int PixelsWide = 480;
+    public const int PixelsHigh = 270;
+    public const float PixelsPerUnit = 16f;
+
+    public const float Width = PixelsWide / PixelsPerUnit;
+    public const float Height = PixelsHigh / PixelsPerUnit;
+    public const float HalfWidth = Width * 0.5f;
+    public const float HalfHeight = Height * 0.5f;
 }
