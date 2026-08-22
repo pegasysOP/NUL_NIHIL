@@ -20,16 +20,25 @@ public class CameraBoxConfiner : CinemachineExtension
         if (stage != CinemachineCore.Stage.Body || bounds == null)
             return;
 
-        Bounds b = bounds.Value;
         Vector3 pos = state.GetCorrectedPosition();
-        Vector3 clamped = new Vector3(
-            ClampOrCenter(pos.x, b.min.x + ViewportConfig.HalfWidth, b.max.x - ViewportConfig.HalfWidth),
-            ClampOrCenter(pos.y, b.min.y + ViewportConfig.HalfHeight, b.max.y - ViewportConfig.HalfHeight),
-            pos.z);
-        state.PositionCorrection += clamped - pos;
+        Vector2 confined = ConfinedPosition(pos, bounds.Value);
+        state.PositionCorrection += new Vector3(confined.x, confined.y, pos.z) - pos;
     }
 
-    // rooms exactly one screen tall clamp to their centre line
+    // single-screen rooms are 12 tiles tall but the viewport is 11.25, so the
+    // vertical clamp tucks inwards by half the difference in every room
+    private const float roomUnitHeight = 12f;
+    private const float verticalInset = (roomUnitHeight - ViewportConfig.Height) * 0.5f;
+
+    public static Vector2 ConfinedPosition(Vector2 target, Bounds b)
+    {
+        return new Vector2(
+            ClampOrCenter(target.x, b.min.x + ViewportConfig.HalfWidth, b.max.x - ViewportConfig.HalfWidth),
+            ClampOrCenter(target.y, b.min.y + ViewportConfig.HalfHeight + verticalInset,
+                                    b.max.y - ViewportConfig.HalfHeight - verticalInset));
+    }
+
+    // rooms smaller than the clamp range hold their centre line
     private static float ClampOrCenter(float value, float min, float max)
         => min <= max ? Mathf.Clamp(value, min, max) : (min + max) * 0.5f;
 }

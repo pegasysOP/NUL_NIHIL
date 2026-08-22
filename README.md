@@ -1,6 +1,6 @@
 # NUL_NIHIL
 
-2D Metroidvania. Pixel perfect at 480x270 / 16 PPU
+2D Metroidvania. Pixel perfect at 320x180 / 16 PPU
 
 - Player: Dynamic RB but velocity fully script driven (gravity scale 0, frictionless). Boxcast ground snap, coyote time, jump buffer, jump cut.
 - Rooms: One trigger BoxCollider2D per room = membership + camera confinement.

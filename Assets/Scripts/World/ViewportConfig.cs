@@ -1,8 +1,8 @@
 // single authority for the viewport size in code
 public static class ViewportConfig
 {
-    public const int PixelsWide = 480;
-    public const int PixelsHigh = 270;
+    public const int PixelsWide = 320;
+    public const int PixelsHigh = 180;
     public const float PixelsPerUnit = 16f;
 
     public const float Width = PixelsWide / PixelsPerUnit;

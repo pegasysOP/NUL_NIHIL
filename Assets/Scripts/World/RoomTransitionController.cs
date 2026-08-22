@@ -99,14 +99,10 @@ public class RoomTransitionController : MonoBehaviour
     }
 
     // where a camera confined to bounds rests while tracking target
+    // same clamp as the confiner so the slide lands exactly where it will hold
     private static Vector3 ConfinedCameraPosition(Vector2 target, Bounds bounds, float z)
     {
-        return new Vector3(
-            ClampOrCenter(target.x, bounds.min.x + ViewportConfig.HalfWidth, bounds.max.x - ViewportConfig.HalfWidth),
-            ClampOrCenter(target.y, bounds.min.y + ViewportConfig.HalfHeight, bounds.max.y - ViewportConfig.HalfHeight),
-            z);
+        Vector2 confined = CameraBoxConfiner.ConfinedPosition(target, bounds);
+        return new Vector3(confined.x, confined.y, z);
     }
-
-    private static float ClampOrCenter(float value, float min, float max)
-        => min <= max ? Mathf.Clamp(value, min, max) : (min + max) * 0.5f;
 }
