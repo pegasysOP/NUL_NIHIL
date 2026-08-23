@@ -2,7 +2,7 @@
 
 2D Metroidvania. Pixel perfect at 320x180 / 16 PPU
 
-- Player: Dynamic RB but velocity fully script driven (gravity scale 0, frictionless). Boxcast ground snap, coyote time, jump buffer, jump cut.
+- Player: Dynamic RB but velocity fully script driven (gravity scale 0, frictionless). Boxcast ground snap, coyote time, jump buffer, jump cut. Animator code driven.
 - Rooms: One trigger BoxCollider2D per room = membership + camera confinement.
 - Camera: Cinemachine + custom CameraBoxConfiner. Transitions freeze player, slide camera, exact handoff.
 
