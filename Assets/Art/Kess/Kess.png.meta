@@ -4,7 +4,25 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: -2311472117633418337
-    second: Kess_0
+    second: Kess_Idle
+  - first:
+      213: 1122334455667788101
+    second: Kess_Run1
+  - first:
+      213: 1122334455667788102
+    second: Kess_Run2
+  - first:
+      213: 1122334455667788103
+    second: Kess_Run3
+  - first:
+      213: 1122334455667788104
+    second: Kess_Run4
+  - first:
+      213: 1122334455667788105
+    second: Kess_Jump
+  - first:
+      213: 1122334455667788106
+    second: Kess_Fall
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,11 +64,11 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 7
-  spritePivot: {x: 0.5, y: 0.5}
+  spritePivot: {x: 0.5, y: 0}
   spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -113,15 +131,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Kess_0
+      name: Kess_Idle1
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 26
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -130,6 +148,138 @@ TextureImporter:
       bones: []
       spriteID: f9b7d301b500cefd0800000000000000
       internalID: -2311472117633418337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kess_Run1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b5c1a2d3e4f5a6b7c8d9e0f10111201
+      internalID: 1122334455667788101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kess_Run2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b5c1a2d3e4f5a6b7c8d9e0f10111202
+      internalID: 1122334455667788102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kess_Run3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b5c1a2d3e4f5a6b7c8d9e0f10111203
+      internalID: 1122334455667788103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kess_Run4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b5c1a2d3e4f5a6b7c8d9e0f10111204
+      internalID: 1122334455667788104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kess_Jump1
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b5c1a2d3e4f5a6b7c8d9e0f10111205
+      internalID: 1122334455667788105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kess_Fall1
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b5c1a2d3e4f5a6b7c8d9e0f10111206
+      internalID: 1122334455667788106
       vertices: []
       indices: 
       edges: []
@@ -148,7 +298,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Kess_0: -2311472117633418337
+      1: 1122334455667788106
+      Kess_Fall1: 1122334455667788106
+      Kess_Idle1: -2311472117633418337
+      Kess_Jump1: 1122334455667788105
+      Kess_Run1: 1122334455667788101
+      Kess_Run2: 1122334455667788102
+      Kess_Run3: 1122334455667788103
+      Kess_Run4: 1122334455667788104
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

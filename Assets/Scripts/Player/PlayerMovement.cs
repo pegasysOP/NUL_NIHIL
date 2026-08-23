@@ -54,6 +54,12 @@ public class PlayerMovement : MonoBehaviour
     // how far the ground can fall away in one max-speed step on the steepest walkable slope
     private float SnapDistance => maxSpeed * Time.fixedDeltaTime * Mathf.Tan(maxSlopeAngle * Mathf.Deg2Rad) + skinWidth * 2f;
 
+    // read-only state for visuals
+    public bool IsGrounded => isGrounded;
+    public Vector2 Velocity => velocity;
+    public float MoveDirection => moveInput.x;
+    public bool IsFrozen => frozen;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
