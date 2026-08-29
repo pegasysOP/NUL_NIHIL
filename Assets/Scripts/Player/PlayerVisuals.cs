@@ -6,6 +6,14 @@ public class PlayerVisuals : MonoBehaviour
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Animator animator;
+    [SerializeField] private PlayerHealth health;
+    [SerializeField] private Material flashMaterial;
+
+    [Header("Damage")]
+    public float flashDuration = 0.083f;
+    public float blinkHz = 10f;
+
+    private Material baseMaterial;
 
     private enum State { Idle, Run, Jump, Fall }
 
@@ -30,8 +38,19 @@ public class PlayerVisuals : MonoBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (health == null)
+            health = GetComponentInParent<PlayerHealth>();
+
+        baseMaterial = spriteRenderer.sharedMaterial;
+
         if (movement == null)
             Debug.LogError("PlayerVisuals: no PlayerMovement on this object or its parents.", this);
+
+        if (health == null)
+            Debug.LogError("PlayerVisuals: no PlayerHealth on this object or its parents.", this);
+
+        if (flashMaterial == null)
+            Debug.LogError("PlayerVisuals: no flash material assigned.", this);
     }
 
     private void LateUpdate()
@@ -39,7 +58,14 @@ public class PlayerVisuals : MonoBehaviour
         // hold the current pose through room transitions instead of snapping to idle
         animator.speed = movement.IsFrozen ? 0f : 1f;
         if (movement.IsFrozen)
+        {
+            // never carry a half blink or the flash material through a transition
+            spriteRenderer.enabled = true;
+            spriteRenderer.sharedMaterial = baseMaterial;
             return;
+        }
+
+        UpdateDamageVisual();
 
         // face the input direction, keep the last facing when idle
         if (movement.MoveDirection != 0f)
@@ -51,6 +77,31 @@ public class PlayerVisuals : MonoBehaviour
 
         state = next;
         animator.Play(stateHashes[(int)state]);
+    }
+
+    // white flash for the first animation frame's worth of the hit then blink
+    // for the rest of the iframe window
+    private void UpdateDamageVisual()
+    {
+        if (!health.IsInvulnerable)
+        {
+            spriteRenderer.enabled = true;
+            spriteRenderer.sharedMaterial = baseMaterial;
+            return;
+        }
+
+        float elapsed = health.InvulnerabilityElapsed;
+
+        if (elapsed < flashDuration)
+        {
+            spriteRenderer.enabled = true;
+            if (flashMaterial != null)
+                spriteRenderer.sharedMaterial = flashMaterial;
+            return;
+        }
+
+        spriteRenderer.sharedMaterial = baseMaterial;
+        spriteRenderer.enabled = Mathf.FloorToInt((elapsed - flashDuration) * blinkHz) % 2 == 0;
     }
 
     private State PickState()

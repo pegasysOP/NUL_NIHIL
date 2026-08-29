@@ -22,6 +22,11 @@ public class PlayerMovement : MonoBehaviour
     public float maxFallSpeed = -20f;
     public float jumpCutMult = 3f;
 
+    [Header("Knockback")]
+    public float knockbackSpeed = 12f;
+    public float knockbackMinUpward = 8f;
+    public float controlLockTime = 0.25f;
+
     [Header("Ground")]
     // includes OneWay, but Player <-> OneWay solver collision is OFF in the matrix for now:
     // physics ignores the matrix, so the ground casts still hit one-way tiles and the
@@ -46,6 +51,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 groundNormal = Vector2.up;
     private float groundProbe;
     private bool frozen;
+    private float controlLockTimer;
+
+    private bool ControlsLocked => controlLockTimer > 0f;
 
     // body centre in world space (the pivot sits at the feet)
     public Vector2 Center =>
@@ -93,18 +101,50 @@ public class PlayerMovement : MonoBehaviour
         if (frozen)
             return;
 
+        controlLockTimer -= Time.deltaTime;
+
         // full speed or nothing
         Vector2 raw = input.MoveInput;
         moveInput.x = Mathf.Abs(raw.x) > stickDeadzone ? Mathf.Sign(raw.x) : 0f;
         moveInput.y = raw.y;
 
+        // knockback owns the body until the lock expires
+        if (ControlsLocked)
+            moveInput = Vector2.zero;
+
         jumpHeld = input.JumpHeld;
 
-        if (input.JumpPressed)
+        if (input.JumpPressed && !ControlsLocked)
             jumpBufferTimer = jumpBufferTime;
 
         jumpBufferTimer -= Time.deltaTime;
         coyoteTimer -= Time.deltaTime;
+    }
+
+    // FixedUpdate already ran and wrote rb.linearVelocity this step, so write both
+    // the internal velocity and the body or the next adopt step sees stale motion
+    public void ApplyKnockback(Vector2 sourcePoint)
+    {
+        Vector2 away = Center - sourcePoint;
+
+        // default to straight up if the source is too close
+        Vector2 dir = away.sqrMagnitude > 0.0001f ? away.normalized : Vector2.up;
+
+        velocity = dir * knockbackSpeed;
+
+        // always go up a bit
+        if (velocity.y < knockbackMinUpward)
+            velocity.y = knockbackMinUpward;
+
+        rb.linearVelocity = velocity;
+
+        // detach from the ground so MoveAlongGround can't smooth the launch
+        // away and clear the timers so the hit can't be jumped out of
+        isGrounded = false;
+        coyoteTimer = 0f;
+        jumpBufferTimer = 0f;
+
+        controlLockTimer = controlLockTime;
     }
 
     private void FixedUpdate()
@@ -206,12 +246,15 @@ public class PlayerMovement : MonoBehaviour
         float targetSpeed = moveInput.x * maxSpeed;
         float accel = Mathf.Abs(targetSpeed) > Mathf.Epsilon ? acceleration : deceleration;
 
-        velocity.x = Mathf.MoveTowards(velocity.x, targetSpeed, accel * airControlMult * Time.fixedDeltaTime);
+        // air deceleration would eat the knockback before the lock expires
+        if (!ControlsLocked)
+            velocity.x = Mathf.MoveTowards(velocity.x, targetSpeed, accel * airControlMult * Time.fixedDeltaTime);
 
         // apply gravity
         float gravityStep = gravity;
 
-        if (velocity.y > 0f && !jumpHeld)
+        // don't apply jump cut when locked
+        if (velocity.y > 0f && !jumpHeld && !ControlsLocked)
             gravityStep *= jumpCutMult;
 
         velocity.y += gravityStep * Time.fixedDeltaTime;
